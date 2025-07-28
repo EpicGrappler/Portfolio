@@ -53,7 +53,7 @@ const projects = [
     description: "Personal portfolio website showcasing projects, skills, and experience. Features dark mode, responsive design, smooth animations, and modern UI/UX principles.",
     image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=500&h=300&fit=crop",
     technologies: ["React", "Tailwind CSS", "JavaScript", "Responsive Design"],
-    github: "#",
+    github: "https://github.com/EpicGrappler/Portfolio#",
     live: "#",
     featured: false
   }
