@@ -1,4 +1,4 @@
-import { Download, Award, Users, GraduationCap } from 'lucide-react';
+import { ExternalLink, Award, Users, GraduationCap } from 'lucide-react';
 import { useScrollAnimation, ScrollAnimatedDiv } from '../hooks/useScrollAnimation';
 
 function About() {
@@ -11,6 +11,12 @@ function About() {
     { icon: <Award className="w-8 h-8" />, value: "6+", label: "Projects Completed" },
     { icon: <Users className="w-8 h-8" />, value: "2027", label: "Expected Graduation" },
   ];
+
+  // Handle CV viewing in new tab
+  const handleShowCV = () => {
+    // Open CV in new tab
+    window.open('/Portfolio/cv/Mostafa_Ashraf_Suliman_CV.pdf', '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <section id="about" className="py-20 bg-gray-50 dark:bg-gray-800 px-6 transition-colors duration-300">
@@ -150,14 +156,15 @@ function About() {
                 >
                   Get In Touch
                 </a>
-                <a 
-                  href="my-app/public/cv/Mostafa_Ashraf_Suliman_CV.pdf"
-                  download="Mostafa_Ashraf_CV.pdf" 
-                  className="inline-flex items-center justify-center px-6 py-3 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 font-semibold rounded-lg hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-400 dark:hover:text-gray-900 transform hover:scale-105 transition-all duration-300"
+                
+                {/* Show CV Button */}
+                <button 
+                  onClick={handleShowCV}
+                  className="inline-flex items-center justify-center px-9 py-3 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400 font-semibold rounded-lg hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-400 dark:hover:text-gray-900 transform hover:scale-105 transition-all duration-300 min-w-[140px]"
                 >
-                  <Download className="w-5 h-5 mr-2" />
-                  Download CV
-                </a>
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Show CV
+                </button>
               </div>
             </ScrollAnimatedDiv>
           </div>
