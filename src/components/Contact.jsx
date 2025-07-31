@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, MapPin, Phone, Send, Github, Linkedin, Twitter, Facebook } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Github, Linkedin, Facebook } from 'lucide-react';
 import { useScrollAnimation, ScrollAnimatedDiv } from '../hooks/useScrollAnimation';
 import emailjs from '@emailjs/browser';
 
@@ -46,7 +46,7 @@ function Contact() {
           from_email: formData.email,
           subject: formData.subject,
           message: formData.message,
-          to_name: 'Mostafa Ashraf', // Your name
+          to_name: 'Mostafa Ashraf',
           reply_to: formData.email,
         },
         EMAIL_PUBLIC_KEY
@@ -98,8 +98,25 @@ function Contact() {
 
   const socialLinks = [
     { icon: <Github className="w-6 h-6" />, href: "#", label: "GitHub" },
-    { icon: <Linkedin className="w-6 h-6" />, href: "#", label: "LinkedIn" },
-    { icon: <Twitter className="w-6 h-6" />, href: "#", label: "Twitter" }
+    { icon: <Linkedin className="w-6 h-6" />, href: "https://www.linkedin.com/in/mostafa-ashraf-040aa02a4?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", label: "LinkedIn" },
+    { icon: <Facebook className="w-6 h-6" />, href: "#", label: "Facebook" }
+//     {
+//   icon: (
+//     <svg
+//       role="img"
+//       viewBox="0 0 24 24"
+//       xmlns="http://www.w3.org/2000/svg"
+//       className="w-6 h-6 text-white"
+//       fill="currentColor"
+//     >
+//       <title>X</title>
+//       <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+//     </svg>
+//   ),
+//   href: "#",
+//   label: "X"
+// }
+
   ];
 
   return (
