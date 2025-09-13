@@ -1,35 +1,43 @@
 import { ExternalLink, Github, FileText, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useScrollAnimation, useStaggeredAnimation, ScrollAnimatedDiv } from '../hooks/useScrollAnimation';
-import IT_Project_Image from "../../public/images/IT-Project.png"
+import IT_Project_Image from "../../public/images/IT-image.png"
+import Network_Doc_Image from "../../public/images/Network-image.png"
+import TicTacToe_Image from "../../public/images/Tic-Tac-Toe-image.png"
+import Hospital_System_Image from "../../public/images/Hospital-image.png"
+import Hotel_System_Image from "../../public/images/Hotel-Reservation-image.png"
+import Portfolio_Image from "../../public/images/Portfolio-image.png"
+  const handleShowDoc = () => {
+    window.open('/Portfolio/Projects/Network-Documentation.pdf', '_blank', 'noopener,noreferrer');
+  };
 
 const projects = [
   {
     title: "Hotel Management System",
     description: "A comprehensive hotel management system built with Java. Features include room booking, customer management, billing system, and staff management with a user-friendly GUI interface.",
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500&h=300&fit=crop",
+    image: Hotel_System_Image,
     technologies: ["Java", "Swing", "Database", "GUI"],
-    github: "#",
+    github: "https://github.com/Yami-Noop/Hotel-Reservation-System-Project",
     live: "#",
-    featured: true,
-    hasLive: true
+    featured: false,
+    hasLive: false
   },
   {
     title: "Hospital Management System",
     description: "Python-based hospital management system with patient records management, appointment scheduling, doctor management, and medical inventory tracking capabilities.",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500&h=300&fit=crop",
+    image: Hospital_System_Image,
     technologies: ["Python", "Database", "GUI", "Data Management"],
-    github: "#",
+    github: "https://github.com/EpicGrappler/Hospital-Management-System",
     live: "#",
-    featured: true,
-    hasLive: true
+    featured: false,
+    hasLive: false
   },
   {
     title: "Clinic Website",
     description: "Modern, responsive clinic website with appointment booking system, doctor profiles, services showcase, and patient portal. Built with modern frontend technologies.",
     image: IT_Project_Image,
     technologies: ["HTML5", "CSS3", "JavaScript", "Responsive Design"],
-    github: "#",
+    github: "https://github.com/EpicGrappler/IT-project",
     live: "#",
     featured: true,
     hasLive: true
@@ -37,31 +45,31 @@ const projects = [
   {
     title: "AI Tic-Tac-Toe Game",
     description: "Intelligent Tic-Tac-Toe game featuring AI opponent using minimax algorithm. The AI provides challenging gameplay with different difficulty levels and strategic decision making.",
-    image: "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500&h=300&fit=crop",
+    image: TicTacToe_Image,
     technologies: ["Python", "AI Algorithm", "Minimax", "Game Development"],
     github: "https://github.com/EpicGrappler/AI-Tic-Tac-Toe-Game",
     live: "/Portfolio/Projects/Tic-Tac-Toe.html",
-    featured: false,
+    featured: true,
     hasLive: true
   },
   {
     title: "College Network Setup",
     description: "Comprehensive network infrastructure design and implementation for college campus. Includes VLAN configuration, routing protocols, and network security implementation using CCNA principles.",
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=500&h=300&fit=crop",
+    image: Network_Doc_Image,
     technologies: ["CCNA", "Network Design", "Routing", "VLAN"],
     github: "#",
-    live: "#",
-    featured: false,
-    showDocumentation: true
+    featured: true,
+    showDocumentation: true,
+    handleShowDoc: handleShowDoc
   },
   {
     title: "Portfolio Website",
     description: "Personal portfolio website showcasing projects, skills, and experience. Features dark mode, responsive design, smooth animations, and modern UI/UX principles.",
-    image: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=500&h=300&fit=crop",
+    image: Portfolio_Image,
     technologies: ["React", "Tailwind CSS", "JavaScript", "Responsive Design"],
-    github: "#",
-    live: "#",
-    featured: false,
+    github: "https://github.com/EpicGrappler/Portfolio",
+    live: "https://epicgrappler.github.io/Portfolio/",
+    featured: true,
     hasLive: true
   }
 ];
@@ -159,6 +167,7 @@ function Projects() {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={project.showDocumentation ? project.handleShowDoc : undefined}
                       className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors duration-200 transform hover:scale-110"
                       aria-label={project.showDocumentation ? "View documentation" : "View source code"}
                     >
