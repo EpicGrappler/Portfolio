@@ -97,7 +97,7 @@ function Contact() {
   ];
 
   const socialLinks = [
-    { icon: <Github className="w-6 h-6" />, href: "#", label: "GitHub" },
+    { icon: <Github className="w-6 h-6" />, href: "https://github.com/EpicGrappler", label: "GitHub" },
     { icon: <Linkedin className="w-6 h-6" />, href: "https://www.linkedin.com/in/mostafa-ashraf-040aa02a4?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", label: "LinkedIn" },
     { icon: <Facebook className="w-6 h-6" />, href: "#", label: "Facebook" }
 //     {

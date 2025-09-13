@@ -1,6 +1,7 @@
 import { ExternalLink, Github } from 'lucide-react';
 import { useState } from 'react';
 import { useScrollAnimation, useStaggeredAnimation, ScrollAnimatedDiv } from '../hooks/useScrollAnimation';
+import IT_Project_Image from "../../public/images/IT-Project.png"
 
 const projects = [
   {
@@ -24,7 +25,7 @@ const projects = [
   {
     title: "Clinic Website",
     description: "Modern, responsive clinic website with appointment booking system, doctor profiles, services showcase, and patient portal. Built with modern frontend technologies.",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=300&fit=crop",
+    image: IT_Project_Image,
     technologies: ["HTML5", "CSS3", "JavaScript", "Responsive Design"],
     github: "#",
     live: "#",
