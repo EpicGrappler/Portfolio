@@ -1,4 +1,4 @@
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Github, FileText, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useScrollAnimation, useStaggeredAnimation, ScrollAnimatedDiv } from '../hooks/useScrollAnimation';
 import IT_Project_Image from "../../public/images/IT-Project.png"
@@ -11,7 +11,8 @@ const projects = [
     technologies: ["Java", "Swing", "Database", "GUI"],
     github: "#",
     live: "#",
-    featured: true
+    featured: true,
+    hasLive: true
   },
   {
     title: "Hospital Management System",
@@ -20,7 +21,8 @@ const projects = [
     technologies: ["Python", "Database", "GUI", "Data Management"],
     github: "#",
     live: "#",
-    featured: true
+    featured: true,
+    hasLive: true
   },
   {
     title: "Clinic Website",
@@ -29,16 +31,18 @@ const projects = [
     technologies: ["HTML5", "CSS3", "JavaScript", "Responsive Design"],
     github: "#",
     live: "#",
-    featured: true
+    featured: true,
+    hasLive: true
   },
   {
     title: "AI Tic-Tac-Toe Game",
     description: "Intelligent Tic-Tac-Toe game featuring AI opponent using minimax algorithm. The AI provides challenging gameplay with different difficulty levels and strategic decision making.",
     image: "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=500&h=300&fit=crop",
     technologies: ["Python", "AI Algorithm", "Minimax", "Game Development"],
-    github: "#",
-    live: "#",
-    featured: false
+    github: "https://github.com/EpicGrappler/AI-Tic-Tac-Toe-Game",
+    live: "/Portfolio/Projects/Tic-Tac-Toe.html",
+    featured: false,
+    hasLive: true
   },
   {
     title: "College Network Setup",
@@ -47,7 +51,8 @@ const projects = [
     technologies: ["CCNA", "Network Design", "Routing", "VLAN"],
     github: "#",
     live: "#",
-    featured: false
+    featured: false,
+    showDocumentation: true
   },
   {
     title: "Portfolio Website",
@@ -56,7 +61,8 @@ const projects = [
     technologies: ["React", "Tailwind CSS", "JavaScript", "Responsive Design"],
     github: "#",
     live: "#",
-    featured: false
+    featured: false,
+    hasLive: true
   }
 ];
 
@@ -147,13 +153,35 @@ function Projects() {
                   className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <a 
-                    href={project.github}
-                    className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors duration-200 transform hover:scale-110"
-                    aria-label="View source code"
-                  >
-                    <Github className="w-5 h-5 text-white" />
-                  </a>
+                  <div className="flex space-x-3">
+                    {/* GitHub or Documentation Button */}
+                    <a 
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors duration-200 transform hover:scale-110"
+                      aria-label={project.showDocumentation ? "View documentation" : "View source code"}
+                    >
+                      {project.showDocumentation ? (
+                        <FileText className="w-5 h-5 text-white" />
+                      ) : (
+                        <Github className="w-5 h-5 text-white" />
+                      )}
+                    </a>
+                    
+                    {/* Live Demo Button */}
+                    {project.hasLive && (
+                      <a 
+                        href={project.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors duration-200 transform hover:scale-110"
+                        aria-label="View live demo"
+                      >
+                        <Eye className="w-5 h-5 text-white" />
+                      </a>
+                    )}
+                  </div>
                 </div>
                 {project.featured && (
                   <div className={`absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium transform transition-all duration-700 ${
@@ -172,7 +200,7 @@ function Projects() {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
                   {project.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed line-clamp-2 lg:line-clamp-3">
                   {project.description}
                 </p>
                 
