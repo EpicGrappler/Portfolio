@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        .game-container {
+            display: flex;
+            gap: 20px;
+        }
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 2px;
+            margin-bottom: 15px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 26px;
+            font-family: Arial;
+            background-color: white;
+            border: 2px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+        .config-panel {
+            min-width: 250px;
+            padding: 10px;
+        }
+        .radio-group {
+            margin: 10px 0;
+        }
+        .radio-group label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .stats-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .stats-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .chart-container {
+            margin-top: 20px;
+            width: 400px;
+            height: 300px;
+        }
+        h3 {
+            margin-top: 0;
+        }
+        .github-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .github-link:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-area">
+            <div class="game-board" id="gameBoard"></div>
+            <a href="https://github.com/EpicGrappler/AI-Tic-Tac-Toe-Game" target="_blank" class="github-link">View Original Python Code on GitHub</a>
+        </div>
+        
+        <div class="config-panel">
+            <h3>Select Algorithm:</h3>
+            <div class="radio-group" id="algorithmGroup">
+                <label><input type="radio" name="algorithm" value="0" checked> Simple Minimax</label>
+                <label><input type="radio" name="algorithm" value="1"> Minimax with Alpha-Beta Pruning</label>
+                <label><input type="radio" name="algorithm" value="2"> Minimax with Greedy Best-First</label>
+                <label><input type="radio" name="algorithm" value="3"> Minimax with A*</label>
+                <label><input type="radio" name="algorithm" value="4"> Minimax with Symmetry Reduction</label>
+                <label><input type="radio" name="algorithm" value="5"> Minimax with Heuristic Reduction</label>
+            </div>
+            
+            <h3>Starting Player:</h3>
+            <div class="radio-group" id="playerGroup">
+                <label><input type="radio" name="player" value="X" checked> Player (X)</label>
+                <label><input type="radio" name="player" value="O"> AI (O)</label>
+            </div>
+            
+            <div class="stats-box">
+                <div class="stats-title">Statistics</div>
+                <div id="humanWins">Human Wins: 0</div>
+                <div id="aiWins">AI Wins: 0</div>
+                <div id="draws">Draws: 0</div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="chartCanvas" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let gameBoard = [
+            [" ", " ", " "],
+            [" ", " ", " "],
+            [" ", " ", " "]
+        ];
+        
+        let humanWins = 0;
+        let aiWins = 0;
+        let draws = 0;
+        let playerSymbol = "X";
+        let aiSymbol = "O";
+        let playerTurn = true;
+        let counter = 0;
+        let currentAlgorithm = 0;
+        let memo = {};
+
+        // DOM elements
+        const gameBoardElement = document.getElementById('gameBoard');
+        const humanWinsElement = document.getElementById('humanWins');
+        const aiWinsElement = document.getElementById('aiWins');
+        const drawsElement = document.getElementById('draws');
+        const chartCanvas = document.getElementById('chartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        // Initialize game board
+        function initializeBoard() {
+            gameBoardElement.innerHTML = '';
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.textContent = ' ';
+                    cell.onclick = () => cellClick(row, col);
+                    cell.id = `cell-${row}-${col}`;
+                    gameBoardElement.appendChild(cell);
+                }
+            }
+        }
+
+        function Winner(board) {
+            for (let row = 0; row < 3; row++) {
+                if (board[row][0] === board[row][1] && board[row][1] === board[row][2] && board[row][0] !== " ") {
+                    return board[row][0];
+                }
+            }
+            for (let col = 0; col < 3; col++) {
+                if (board[0][col] === board[1][col] && board[1][col] === board[2][col] && board[0][col] !== " ") {
+                    return board[0][col];
+                }
+            }
+            if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[0][0] !== " ") {
+                return board[0][0];
+            }
+            if (board[0][2] === board[1][1] && board[1][1] === board[2][0] && board[0][2] !== " ") {
+                return board[0][2];
+            }
+            return null;
+        }
+
+        function makeAiMove() {
+            const move = bestMove(gameBoard);
+            
+            if (move) {
+                const [row, col] = move;
+                gameBoard[row][col] = aiSymbol;
+                document.getElementById(`cell-${row}-${col}`).textContent = aiSymbol;
+                playerTurn = true;
+                counter++;
+                const winner = Winner(gameBoard);
+                if (winner === aiSymbol) {
+                    alert("AI won!");
+                    reset();
+                    return;
+                } else if (counter === 9) {
+                    alert("It's a draw!");
+                    reset();
+                    return;
+                }
+            }
+        }
+
+        function reset(newGame = false) {
+            if (!newGame) {
+                const winner = Winner(gameBoard);
+                if (winner === playerSymbol) {
+                    humanWins++;
+                    humanWinsElement.textContent = `Human Wins: ${humanWins}`;
+                } else if (winner === aiSymbol) {
+                    aiWins++;
+                    aiWinsElement.textContent = `AI Wins: ${aiWins}`;
+                } else if (counter === 9) {
+                    draws++;
+                    drawsElement.textContent = `Draws: ${draws}`;
+                }
+                updateChart();
+            }
+
+            counter = 0;
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    gameBoard[row][col] = " ";
+                    document.getElementById(`cell-${row}-${col}`).textContent = " ";
+                }
+            }
+
+            playerTurn = (playerSymbol === "X");
+            if (!playerTurn && !newGame) {
+                setTimeout(() => makeAiMove(), 100);
+            }
+        }
+
+        function startGame() {
+            const algorithmRadios = document.querySelectorAll('input[name="algorithm"]');
+            const playerRadios = document.querySelectorAll('input[name="player"]');
+            
+            for (const radio of algorithmRadios) {
+                if (radio.checked) {
+                    currentAlgorithm = parseInt(radio.value);
+                    break;
+                }
+            }
+            
+            for (const radio of playerRadios) {
+                if (radio.checked) {
+                    playerSymbol = radio.value;
+                    break;
+                }
+            }
+            
+            aiSymbol = playerSymbol === "X" ? "O" : "X";
+            reset();
+        }
+
+        function minimaxSimple(board, depth, isMaximizing) {
+            const winner = Winner(board);
+            if (winner === playerSymbol) {
+                return -10;
+            } else if (winner === aiSymbol) {
+                return 10;
+            } else if (board.every(row => row.every(cell => cell !== " "))) {
+                return 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = aiSymbol;
+                            const score = minimaxSimple(board, depth + 1, false);
+                            board[row][col] = " ";
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = playerSymbol;
+                            const score = minimaxSimple(board, depth + 1, true);
+                            board[row][col] = " ";
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function minimaxAlphaBeta(board, depth, isMaximizing, alpha, beta) {
+            const winner = Winner(board);
+            if (winner === playerSymbol) {
+                return -10;
+            } else if (winner === aiSymbol) {
+                return 10;
+            } else if (board.every(row => row.every(cell => cell !== " "))) {
+                return 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = aiSymbol;
+                            const score = minimaxAlphaBeta(board, depth + 1, false, alpha, beta);
+                            board[row][col] = " ";
+                            bestScore = Math.max(score, bestScore);
+                            alpha = Math.max(alpha, bestScore);
+                            if (alpha >= beta) {
+                                return alpha;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = playerSymbol;
+                            const score = minimaxAlphaBeta(board, depth + 1, true, alpha, beta);
+                            board[row][col] = " ";
+                            bestScore = Math.min(score, bestScore);
+                            beta = Math.min(beta, bestScore);
+                            if (alpha >= beta) {
+                                return beta;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function heuristicH(board, player) {
+            const opponent = player === aiSymbol ? playerSymbol : aiSymbol;
+            let score = 0;
+            const lines = [
+                [board[0][0], board[0][1], board[0][2]],
+                [board[1][0], board[1][1], board[1][2]],
+                [board[2][0], board[2][1], board[2][2]],
+                [board[0][0], board[1][0], board[2][0]],
+                [board[0][1], board[1][1], board[2][1]],
+                [board[0][2], board[1][2], board[2][2]],
+                [board[0][0], board[1][1], board[2][2]],
+                [board[0][2], board[1][1], board[2][0]]
+            ];
+            for (const line of lines) {
+                if (!line.includes(opponent)) {
+                    score += 1;
+                }
+            }
+            return score;
+        }
+
+        function minimaxGreedy(board, depth, isMaximizing) {
+            const winner = Winner(board);
+            if (winner === playerSymbol) {
+                return -10 + depth;
+            } else if (winner === aiSymbol) {
+                return 10 - depth;
+            } else if (board.every(row => row.every(cell => cell !== " "))) {
+                return 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = aiSymbol;
+                            const score = minimaxGreedy(board, depth + 1, false) + heuristicH(board, aiSymbol);
+                            board[row][col] = " ";
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = playerSymbol;
+                            const score = minimaxGreedy(board, depth + 1, true) - heuristicH(board, playerSymbol);
+                            board[row][col] = " ";
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function heuristicAstar(board) {
+            let score = 0;
+            const winConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8],
+                                  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                                  [0, 4, 8], [2, 4, 6]];
+
+            const b2 = [];
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    b2.push(board[row][col]);
+                }
+            }
+
+            for (const [a, b, c] of winConditions) {
+                if (b2[a] === b2[b] && b2[a] === playerSymbol && b2[c] === " ") {
+                    score += 10;
+                } else if (b2[b] === b2[c] && b2[b] === playerSymbol && b2[a] === " ") {
+                    score += 10;
+                } else if (b2[a] === b2[c] && b2[a] === playerSymbol && b2[b] === " ") {
+                    score += 10;
+                } else if (b2[a] === b2[b] && b2[a] === aiSymbol && b2[c] === " ") {
+                    score -= 10;
+                } else if (b2[b] === b2[c] && b2[b] === aiSymbol && b2[a] === " ") {
+                    score -= 10;
+                } else if (b2[a] === b2[c] && b2[a] === aiSymbol && b2[b] === " ") {
+                    score -= 10;
+                }
+            }
+            return score;
+        }
+
+        function minimaxAstar(board, depth, isMaximizing) {
+            const winner = Winner(board);
+            if (winner === aiSymbol) {
+                return 10;
+            } else if (winner === playerSymbol) {
+                return -10;
+            } else if (board.every(row => row.every(cell => cell !== " "))) {
+                return 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = aiSymbol;
+                            const score = heuristicAstar(board) + minimaxAstar(board, depth + 1, false);
+                            board[row][col] = " ";
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = playerSymbol;
+                            const score = heuristicAstar(board) + minimaxAstar(board, depth + 1, true);
+                            board[row][col] = " ";
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function rotateBoard(board) {
+            const result = [[], [], []];
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    result[i][j] = board[2-j][i];
+                }
+            }
+            return result;
+        }
+
+        function reflectBoard(board) {
+            return board.map(row => [...row].reverse());
+        }
+
+        function getCanonicalBoard(board) {
+            const transformations = [
+                board,
+                rotateBoard(board),
+                rotateBoard(rotateBoard(board)),
+                rotateBoard(rotateBoard(rotateBoard(board))),
+                reflectBoard(board),
+                rotateBoard(reflectBoard(board)),
+                rotateBoard(rotateBoard(reflectBoard(board))),
+                rotateBoard(rotateBoard(rotateBoard(reflectBoard(board))))
+            ];
+            return transformations.reduce((min, current) => {
+                const currentStr = JSON.stringify(current);
+                const minStr = JSON.stringify(min);
+                return currentStr < minStr ? current : min;
+            });
+        }
+
+        function minimaxSymmetry(board, depth, isMaximizing) {
+            const canonicalBoard = getCanonicalBoard(board);
+            const boardKey = JSON.stringify(canonicalBoard);
+            if (memo[boardKey] !== undefined) {
+                return memo[boardKey];
+            }
+            
+            const winner = Winner(board);
+            if (winner === aiSymbol) {
+                return 10;
+            } else if (winner === playerSymbol) {
+                return -10;
+            } else if (board.every(row => row.every(cell => cell !== " "))) {
+                return 0;
+            }
+
+            let bestScore = isMaximizing ? -Infinity : Infinity;
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === " ") {
+                        board[row][col] = isMaximizing ? aiSymbol : playerSymbol;
+                        const score = minimaxSymmetry(board, depth + 1, !isMaximizing);
+                        board[row][col] = " ";
+                        bestScore = isMaximizing ? Math.max(score, bestScore) : Math.min(score, bestScore);
+                    }
+                }
+            }
+            memo[boardKey] = bestScore;
+            return bestScore;
+        }
+
+        function heuristicReduction(board) {
+            let score = 0;
+            
+            // Check rows
+            for (let row = 0; row < 3; row++) {
+                const xCount = board[row].filter(cell => cell === playerSymbol).length;
+                const oCount = board[row].filter(cell => cell === aiSymbol).length;
+                if (oCount === 2 && xCount === 0) {
+                    score += 10;
+                } else if (xCount === 2 && oCount === 0) {
+                    score -= 10;
+                }
+            }
+            
+            // Check columns
+            for (let col = 0; col < 3; col++) {
+                const column = [board[0][col], board[1][col], board[2][col]];
+                const xCount = column.filter(cell => cell === playerSymbol).length;
+                const oCount = column.filter(cell => cell === aiSymbol).length;
+                if (oCount === 2 && xCount === 0) {
+                    score += 10;
+                } else if (xCount === 2 && oCount === 0) {
+                    score -= 10;
+                }
+            }
+            
+            // Check diagonals
+            const diagonals = [
+                [board[0][0], board[1][1], board[2][2]],
+                [board[0][2], board[1][1], board[2][0]]
+            ];
+            for (const diag of diagonals) {
+                const xCount = diag.filter(cell => cell === playerSymbol).length;
+                const oCount = diag.filter(cell => cell === aiSymbol).length;
+                if (oCount === 2 && xCount === 0) {
+                    score += 10;
+                } else if (xCount === 2 && oCount === 0) {
+                    score -= 10;
+                }
+            }
+            return score;
+        }
+
+        function minimaxHeuristicReduction(board, depth, isMaximizing) {
+            const winner = Winner(board);
+            if (winner === playerSymbol) {
+                return -100;
+            } else if (winner === aiSymbol) {
+                return 100;
+            } else if (board.every(row => row.every(cell => cell !== " "))) {
+                return 0;
+            }
+
+            if (depth >= 2) {
+                return heuristicReduction(board);
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = aiSymbol;
+                            const score = minimaxHeuristicReduction(board, depth + 1, false);
+                            board[row][col] = " ";
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        if (board[row][col] === " ") {
+                            board[row][col] = playerSymbol;
+                            const score = minimaxHeuristicReduction(board, depth + 1, true);
+                            board[row][col] = " ";
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function bestMove(board) {
+            // Check if AI can win
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === " ") {
+                        board[row][col] = aiSymbol;
+                        if (Winner(board) === aiSymbol) {
+                            board[row][col] = " ";
+                            return [row, col];
+                        }
+                        board[row][col] = " ";
+                    }
+                }
+            }
+            
+            // Check if player can win and block
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === " ") {
+                        board[row][col] = playerSymbol;
+                        if (Winner(board) === playerSymbol) {
+                            board[row][col] = " ";
+                            return [row, col];
+                        }
+                        board[row][col] = " ";
+                    }
+                }
+            }
+
+            let bestScore = -Infinity;
+            let move = null;
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 3; col++) {
+                    if (board[row][col] === " ") {
+                        board[row][col] = aiSymbol;
+
+                        let score;
+                        if (currentAlgorithm === 0) {
+                            score = minimaxSimple(board, 0, false);
+                        } else if (currentAlgorithm === 1) {
+                            score = minimaxAlphaBeta(board, 0, false, -Infinity, Infinity);
+                        } else if (currentAlgorithm === 2) {
+                            score = minimaxGreedy(board, 0, false) + heuristicH(board, aiSymbol);
+                        } else if (currentAlgorithm === 3) {
+                            score = minimaxAstar(board, 0, false);
+                        } else if (currentAlgorithm === 4) {
+                            score = minimaxSymmetry(board, 0, false);
+                        } else if (currentAlgorithm === 5) {
+                            score = heuristicReduction(board) + minimaxHeuristicReduction(board, 0, false);
+                        }
+
+                        board[row][col] = " ";
+                        if (score > bestScore) {
+                            bestScore = score;
+                            move = [row, col];
+                        }
+                    }
+                }
+            }
+            return move;
+        }
+
+        function cellClick(row, col) {
+            const cell = document.getElementById(`cell-${row}-${col}`);
+            if (cell.textContent === " " && playerTurn) {
+                gameBoard[row][col] = playerSymbol;
+                cell.textContent = playerSymbol;
+                playerTurn = false;
+                counter++;
+                const winner = Winner(gameBoard);
+                if (winner === playerSymbol) {
+                    alert("Human won!");
+                    reset();
+                    return;
+                } else if (counter === 9) {
+                    alert("It's a draw!");
+                    reset();
+                    return;
+                }
+
+                setTimeout(() => makeAiMove(), 100);
+            } else if (!playerTurn) {
+                alert("Wait for AI's move");
+            } else {
+                alert("This cell is already taken!");
+            }
+        }
+
+        function updateChart() {
+            ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+            
+            const data = [humanWins, aiWins, draws];
+            const labels = ["Human Wins", "AI Wins", "Draws"];
+            const colors = ["blue", "red", "green"];
+            const maxValue = Math.max(...data) || 1;
+            
+            const barWidth = 80;
+            const barSpacing = 40;
+            const startX = 50;
+            const chartHeight = 200;
+            const startY = 250;
+            
+            for (let i = 0; i < data.length; i++) {
+                const barHeight = (data[i] / maxValue) * chartHeight;
+                const x = startX + i * (barWidth + barSpacing);
+                const y = startY - barHeight;
+                
+                ctx.fillStyle = colors[i];
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Draw labels
+                ctx.fillStyle = "black";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(labels[i], x + barWidth/2, startY + 20);
+                ctx.fillText(data[i].toString(), x + barWidth/2, y - 5);
+            }
+            
+            // Title
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Tic Tac Toe Game Outcomes", chartCanvas.width/2, 30);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBoard();
+            startGame();
+            updateChart();
+            
+            // Add event listeners for radio buttons
+            document.querySelectorAll('input[name="algorithm"]').forEach(radio => {
+                radio.addEventListener('change', startGame);
+            });
+            
+            document.querySelectorAll('input[name="player"]').forEach(radio => {
+                radio.addEventListener('change', startGame);
+            });
+        });
+    </script>
+</body>
+</html>
