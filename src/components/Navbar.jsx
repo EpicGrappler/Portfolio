@@ -22,20 +22,28 @@ function Navbar() {
       const scrollTop = window.scrollY;
       setIsScrolled(scrollTop > 20);
 
-      // Detect active section
+      // Detect active section with improved logic
       const sections = navItems.map(item => item.href.substring(1));
-      const currentSection = sections.find(section => {
+      let currentSection = 'hero';
+
+      // Check each section to find which one is currently in view
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+          // A section is active if its top is above the middle of the viewport
+          // or if we're near the bottom of the page and this is the last section
+          const isNearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+          
+          if (rect.top <= window.innerHeight / 2 || (isNearBottom && section === 'contact')) {
+            currentSection = section;
+            break;
+          }
         }
-        return false;
-      });
-
-      if (currentSection) {
-        setActiveSection(currentSection);
       }
+
+      setActiveSection(currentSection);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -82,7 +90,7 @@ function Navbar() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            {/* Logo */}
+            {/* Logo with Photo */}
             <div className="flex-shrink-0">
               <a 
                 href="#hero"
@@ -92,9 +100,21 @@ function Navbar() {
                 }}
                 className="flex items-center space-x-2 group"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200">
-                  <span className="text-white font-bold text-lg">M</span>
+                <div className="w-10 h-10 rounded-lg overflow-hidden ring-2 ring-indigo-500/20 group-hover:ring-indigo-500/50 transform group-hover:scale-110 transition-all duration-200">
+                  <img 
+                    src="/Portfolio/images/profile-photo.jpg" 
+                    alt="Mostafa Ashraf"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextElementSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center" style={{ display: 'none' }}>
+                    <span className="text-white font-bold text-lg">M</span>
+                  </div>
                 </div>
+                
                 <div className="hidden sm:block">
                   <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     Mostafa Ashraf
@@ -125,7 +145,6 @@ function Navbar() {
                   </span>
                   <span>{item.name}</span>
                   
-                  {/* Active indicator */}
                   {activeSection === item.href.substring(1) && (
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-indigo-600 dark:bg-indigo-400 rounded-full"></div>
                   )}

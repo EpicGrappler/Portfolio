@@ -103,7 +103,7 @@ function Projects() {
             duration="0.8s"
           >
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-              Here are some of my recent projects that showcase my skills and passion for creating amazing web experiences
+              Selected projects demonstrating machine learning fundamentals, algorithmic thinking, and applied problem-solving.
             </p>
           </ScrollAnimatedDiv>
           

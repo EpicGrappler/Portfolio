@@ -1,43 +1,43 @@
-import { Code, Palette, Database, Server, Brain, Users } from 'lucide-react';
+import { Code, BrainCircuit, Database, Cpu, Brain, Server } from 'lucide-react';
 import { useScrollAnimation, useStaggeredAnimation, ScrollAnimatedDiv } from '../hooks/useScrollAnimation';
 
 const skills = [
   {
-    category: "Programming",
+    category: "Programming Languages",
     icon: <Code className="w-8 h-8" />,
     skills: ["Python", "C", "Java", "JavaScript", "HTML5", "CSS3"],
     color: "from-blue-500 to-cyan-500"
   },
   {
-    category: "Web Development",
-    icon: <Palette className="w-8 h-8" />,
-    skills: ["Frontend Development", "Responsive Design", "CSS", "React"],
+    category: "Machine Learning",
+    icon: <Brain className="w-8 h-8" />,
+    skills: ["Regression", "Classification", "Recall Optimization", "Threshold Tuning", "Model Evaluation", ],
     color: "from-purple-500 to-pink-500"
   },
   {
-    category: "Computer Science",
-    icon: <Brain className="w-8 h-8" />,
-    skills: ["Algorithms", "Data Structures", "AI Basics", "Operating Systems"],
+    category: "Deep Learning",
+    icon: <BrainCircuit className="w-8 h-8" />,
+    skills: ["Neural Networks (from scratch)", "Keras", "CNNs", "RNNs", "Transformers"],
     color: "from-green-500 to-emerald-500"
   },
   {
-    category: "Systems & Network",
-    icon: <Server className="w-8 h-8" />,
-    skills: ["Linux Basics", "CCNA", "Network Setup", "System Administration"],
+    category: "CS & Systems",
+    icon: <Cpu className="w-8 h-8" />,
+    skills: ["Algorithms", "Data Structures", "MicroProcessors", "Realtime Systems"],
     color: "from-orange-500 to-red-500"
   },
   {
-    category: "Database",
+    category: "Database (Basics)",
     icon: <Database className="w-8 h-8" />,
     skills: ["Database Design", "SQL", "Data Management", "System Analysis"],
     color: "from-indigo-500 to-purple-500"
   },
   {
-    category: "Soft Skills",
-    icon: <Users className="w-8 h-8" />,
-    skills: ["Quick Learner", "Time Management", "Teamwork", "Communication"],
-    color: "from-teal-500 to-blue-500"
-  }
+    category: "Networks",
+    icon: <Server className="w-8 h-8" />,
+    skills: ["System Administration", "Linux Basics", "CCNA", "Network Setup"],
+    color: "from-orange-500 to-red-500"
+  },
 ];
 
 function Skills() {
